@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Hearings — Advocate CMS</title>
+  <link rel="stylesheet" href="../css/style.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fullcalendar/core@6.1.10/main.min.css">
+</head>
+<body>
+<div class="app-layout">
+  <aside class="sidebar" id="sidebar"></aside>
+  <div class="main-content">
+    <header class="topbar">
+      <button class="sidebar-toggle icon-btn" id="sidebar-toggle">☰</button>
+      <div class="topbar-actions">
+        <button class="icon-btn" id="theme-toggle">☀️</button>
+        <div class="avatar" id="topbar-avatar" style="width:32px;height:32px;font-size:13px;cursor:pointer;" onclick="window.location.href='profile.html'">A</div>
+      </div>
+    </header>
+    <main class="page-content">
+      <div class="page-header">
+        <div><h1 class="page-title">Hearing Scheduler</h1><p class="page-subtitle">Manage court dates and schedule hearings</p></div>
+        <button class="btn btn-primary" onclick="openAddHearing()">➕ Schedule Hearing</button>
+      </div>
+
+      <div style="display:grid;grid-template-columns:1fr 360px;gap:16px;" class="hearing-layout">
+        <!-- Calendar -->
+        <div class="chart-card">
+          <div class="card-header"><div class="card-title">📅 Hearing Calendar</div></div>
+          <div id="calendar" style="min-height:500px;"></div>
+        </div>
+
+        <!-- Upcoming list -->
+        <div>
+          <div class="card" style="margin-bottom:16px;">
+            <div class="card-header"><div class="card-title">⏰ Upcoming Hearings</div></div>
+            <div id="upcoming-list">
+              <div class="loading-overlay" style="padding:32px;"><div class="spinner"></div></div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-header">
+              <div class="card-title">📋 All Hearings</div>
+              <select class="filter-select" id="result-filter" onchange="loadHearings()" style="font-size:12px;padding:4px 10px;">
+                <option value="">All</option><option>Pending</option><option>Completed</option><option>Adjourned</option>
+              </select>
+            </div>
+            <div id="hearings-list">
+              <div class="loading-overlay" style="padding:24px;"><div class="spinner"></div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+</div>
+
+<!-- Hearing Modal -->
+<div class="modal-overlay" id="hearing-modal">
+  <div class="modal">
+    <div class="modal-header">
+      <span class="modal-title" id="hearing-modal-title">Schedule Hearing</span>
+      <button class="modal-close" onclick="closeModal('hearing-modal')">✕</button>
+    </div>
+    <div class="modal-body">
+      <input type="hidden" id="hearing-edit-id">
+      <div class="form-group">
+        <label class="form-label">Case <span>*</span></label>
+        <select class="form-select" id="h-case"><option value="">-- Select Case --</option></select>
+      </div>
+      <div class="form-grid">
+        <div class="form-group">
+          <label class="form-label">Hearing Date <span>*</span></label>
+          <input type="date" class="form-input" id="h-date">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Hearing Time</label>
+          <input type="time" class="form-input" id="h-time">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Court Name</label>
+          <input type="text" class="form-input" id="h-court" placeholder="Court name">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Court Room</label>
+          <input type="text" class="form-input" id="h-room" placeholder="Room / Hall No.">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Judge Name</label>
+          <input type="text" class="form-input" id="h-judge" placeholder="Hon. Justice...">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Purpose</label>
+          <input type="text" class="form-input" id="h-purpose" placeholder="e.g. Arguments, Evidence">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Result</label>
+          <select class="form-select" id="h-result">
+            <option>Pending</option><option>Adjourned</option><option>Completed</option><option>Dismissed</option><option>Decided</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Next Date (if adjourned)</label>
+          <input type="date" class="form-input" id="h-next">
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Notes</label>
+        <textarea class="form-textarea" id="h-notes" placeholder="Hearing notes, observations..." rows="3"></textarea>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeModal('hearing-modal')">Cancel</button>
+      <button class="btn btn-primary" onclick="saveHearing()" id="hearing-save-btn">Save Hearing</button>
+    </div>
+  </div>
+</div>
+
+<div id="toast-container"></div>
+<script src="../js/ui.js"></script><script src="../js/api.js"></script>
+<script src="../js/sidebar.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@fullcalendar/core@6.1.10/index.global.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@fullcalendar/daygrid@6.1.10/index.global.min.js"></script>
+<script src="../js/hearings.js"></script>
+</body></html>

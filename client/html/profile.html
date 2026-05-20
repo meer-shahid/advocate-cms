@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Profile Settings — Advocate CMS</title>
+  <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+<div class="app-layout">
+  <aside class="sidebar" id="sidebar"></aside>
+  <div class="main-content">
+    <header class="topbar">
+      <button class="sidebar-toggle icon-btn" id="sidebar-toggle">☰</button>
+      <div class="topbar-actions">
+        <button class="icon-btn" id="theme-toggle">☀️</button>
+      </div>
+    </header>
+    <main class="page-content" style="max-width:800px;">
+      <div class="page-header">
+        <div><h1 class="page-title">Profile & Settings</h1><p class="page-subtitle">Manage your account information</p></div>
+      </div>
+
+      <!-- Avatar & Info -->
+      <div class="card mb-16">
+        <div style="display:flex;align-items:center;gap:20px;">
+          <div class="avatar xl" id="profile-avatar" style="border:3px solid var(--gold);">A</div>
+          <div>
+            <h2 style="font-size:20px;font-weight:700;" id="profile-name">Loading...</h2>
+            <p style="color:var(--text-muted);font-size:14px;" id="profile-firm">—</p>
+            <span class="badge badge-active" id="profile-role" style="margin-top:6px;">Advocate</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tabs -->
+      <div class="tabs mb-16" id="profile-tabs">
+        <div class="tab active" onclick="showTab('info')" id="tab-info">Personal Info</div>
+        <div class="tab" onclick="showTab('password')" id="tab-password">Change Password</div>
+        <div class="tab" onclick="showTab('preferences')" id="tab-preferences">Preferences</div>
+      </div>
+
+      <!-- Personal Info Tab -->
+      <div id="tab-info-panel">
+        <div class="card">
+          <div class="card-header"><div class="card-title">👤 Personal Information</div></div>
+          <div class="form-grid">
+            <div class="form-group">
+              <label class="form-label">Full Name</label>
+              <input type="text" class="form-input" id="p-name" placeholder="Your full name">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Phone</label>
+              <input type="tel" class="form-input" id="p-phone" placeholder="+91 9876543210">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Email</label>
+              <input type="email" class="form-input" id="p-email" disabled style="opacity:0.6;cursor:not-allowed;">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Bar Council Number</label>
+              <input type="text" class="form-input" id="p-bar" placeholder="Bar council registration no.">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Law Firm / Chamber</label>
+              <input type="text" class="form-input" id="p-firm" placeholder="Firm or chamber name">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Specialization</label>
+              <input type="text" class="form-input" id="p-spec" placeholder="e.g. Criminal, Civil, Family...">
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Office Address</label>
+            <input type="text" class="form-input" id="p-address" placeholder="Office / chamber address">
+          </div>
+          <div style="display:flex;justify-content:flex-end;margin-top:8px;">
+            <button class="btn btn-primary" onclick="saveProfile()" id="save-profile-btn">💾 Save Changes</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Password Tab -->
+      <div id="tab-password-panel" class="hidden">
+        <div class="card">
+          <div class="card-header"><div class="card-title">🔒 Change Password</div></div>
+          <div style="max-width:400px;">
+            <div class="form-group">
+              <label class="form-label">Current Password</label>
+              <input type="password" class="form-input" id="p-cur-pass" placeholder="Enter current password">
+            </div>
+            <div class="form-group">
+              <label class="form-label">New Password</label>
+              <input type="password" class="form-input" id="p-new-pass" placeholder="Minimum 6 characters">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Confirm New Password</label>
+              <input type="password" class="form-input" id="p-confirm-pass" placeholder="Repeat new password">
+            </div>
+            <button class="btn btn-primary" onclick="changePassword()" id="change-pass-btn">🔒 Change Password</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Preferences Tab -->
+      <div id="tab-preferences-panel" class="hidden">
+        <div class="card">
+          <div class="card-header"><div class="card-title">⚙️ Preferences</div></div>
+          <div style="display:flex;flex-direction:column;gap:16px;">
+            <div style="display:flex;align-items:center;justify-content:space-between;padding:12px 16px;background:var(--bg-input);border-radius:8px;">
+              <div>
+                <div style="font-size:14px;font-weight:600;">Dark Mode</div>
+                <div style="font-size:12px;color:var(--text-muted);">Toggle dark/light theme</div>
+              </div>
+              <button class="btn btn-secondary btn-sm" id="pref-theme-btn" onclick="toggleTheme()">🌙 Dark</button>
+            </div>
+            <div style="padding:12px 16px;background:var(--bg-input);border-radius:8px;">
+              <div style="font-size:14px;font-weight:600;margin-bottom:4px;">Account Role</div>
+              <div style="font-size:13px;color:var(--text-muted);" id="pref-role">—</div>
+            </div>
+            <div style="padding:12px 16px;background:var(--bg-input);border-radius:8px;">
+              <div style="font-size:14px;font-weight:600;margin-bottom:4px;">Last Login</div>
+              <div style="font-size:13px;color:var(--text-muted);" id="pref-login">—</div>
+            </div>
+            <div style="padding:12px 16px;background:var(--bg-input);border-radius:8px;">
+              <div style="font-size:14px;font-weight:600;margin-bottom:8px;">Danger Zone</div>
+              <button class="btn btn-danger btn-sm" onclick="logout()">🚪 Logout from all devices</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+</div>
+
+<div id="toast-container"></div>
+<script src="../js/ui.js"></script><script src="../js/api.js"></script>
+<script src="../js/sidebar.js"></script><script src="../js/profile.js"></script>
+</body></html>

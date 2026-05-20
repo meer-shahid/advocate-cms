@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Clients — Advocate CMS</title>
+  <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+<div class="app-layout">
+  <aside class="sidebar" id="sidebar"></aside>
+  <div class="main-content">
+    <header class="topbar">
+      <button class="sidebar-toggle icon-btn" id="sidebar-toggle">☰</button>
+      <div class="topbar-search"><span class="search-icon">🔍</span><input type="text" placeholder="Search clients..." id="global-search" oninput="filterClients()"></div>
+      <div class="topbar-actions">
+        <button class="icon-btn" id="theme-toggle">☀️</button>
+        <div class="avatar" id="topbar-avatar" style="width:32px;height:32px;font-size:13px;cursor:pointer;" onclick="window.location.href='profile.html'">A</div>
+      </div>
+    </header>
+    <main class="page-content">
+      <div class="page-header">
+        <div><h1 class="page-title">Clients</h1><p class="page-subtitle">Manage your client roster</p></div>
+        <button class="btn btn-primary" onclick="openModal('client-modal')">➕ Add Client</button>
+      </div>
+
+      <div class="table-container">
+        <div class="table-toolbar">
+          <div class="search-wrapper">
+            <span class="search-icon">🔍</span>
+            <input type="text" class="search-input" placeholder="Search by name, phone, email..." id="search-input" oninput="filterClients()">
+          </div>
+          <select class="filter-select" id="filter-case-type" onchange="filterClients()">
+            <option value="">All Case Types</option>
+            <option>Civil</option><option>Criminal</option><option>Family</option>
+            <option>Corporate</option><option>Property</option><option>Labour</option>
+            <option>Tax</option><option>Constitutional</option><option>Other</option>
+          </select>
+          <select class="filter-select" id="filter-status" onchange="filterClients()">
+            <option value="">All Status</option>
+            <option>Active</option><option>Inactive</option>
+          </select>
+          <span style="margin-left:auto;font-size:13px;color:var(--text-muted);" id="count-text">Loading...</span>
+        </div>
+
+        <table><thead><tr>
+          <th>#</th><th>Client Name</th><th>Phone</th><th>Email</th>
+          <th>Case Type</th><th>Status</th><th>Added</th><th>Actions</th>
+        </tr></thead>
+        <tbody id="clients-tbody">
+          <tr><td colspan="8"><div class="loading-overlay"><div class="spinner"></div></div></td></tr>
+        </tbody></table>
+
+        <div class="pagination" id="pagination"></div>
+      </div>
+    </main>
+  </div>
+</div>
+
+<!-- Add/Edit Client Modal -->
+<div class="modal-overlay" id="client-modal">
+  <div class="modal">
+    <div class="modal-header">
+      <span class="modal-title" id="modal-title">Add New Client</span>
+      <button class="modal-close" onclick="closeModal('client-modal')">✕</button>
+    </div>
+    <div class="modal-body">
+      <input type="hidden" id="edit-id">
+      <div class="form-grid">
+        <div class="form-group">
+          <label class="form-label">Full Name <span>*</span></label>
+          <input type="text" class="form-input" id="c-name" placeholder="Client full name">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Phone <span>*</span></label>
+          <input type="tel" class="form-input" id="c-phone" placeholder="+91 9876543210">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Email</label>
+          <input type="email" class="form-input" id="c-email" placeholder="client@email.com">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Case Type</label>
+          <select class="form-select" id="c-case-type">
+            <option>Civil</option><option>Criminal</option><option>Family</option>
+            <option>Corporate</option><option>Property</option><option>Labour</option>
+            <option>Tax</option><option>Constitutional</option><option>Other</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">City</label>
+          <input type="text" class="form-input" id="c-city" placeholder="City">
+        </div>
+        <div class="form-group">
+          <label class="form-label">State</label>
+          <input type="text" class="form-input" id="c-state" placeholder="State">
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Address</label>
+        <input type="text" class="form-input" id="c-address" placeholder="Full address">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Occupation</label>
+        <input type="text" class="form-input" id="c-occupation" placeholder="Client's occupation">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Notes</label>
+        <textarea class="form-textarea" id="c-notes" placeholder="Any additional notes..." rows="3"></textarea>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeModal('client-modal')">Cancel</button>
+      <button class="btn btn-primary" onclick="saveClient()" id="save-btn">Save Client</button>
+    </div>
+  </div>
+</div>
+
+<!-- Client Details Modal -->
+<div class="modal-overlay" id="client-detail-modal">
+  <div class="modal modal-lg">
+    <div class="modal-header">
+      <span class="modal-title">Client Profile</span>
+      <button class="modal-close" onclick="closeModal('client-detail-modal')">✕</button>
+    </div>
+    <div class="modal-body" id="client-detail-body">
+      <div class="loading-overlay"><div class="spinner"></div></div>
+    </div>
+  </div>
+</div>
+
+<div id="toast-container"></div>
+<script src="../js/ui.js"></script><script src="../js/api.js"></script>
+<script src="../js/sidebar.js"></script><script src="../js/clients.js"></script>
+</body></html>

@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cases — Advocate CMS</title>
+  <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+<div class="app-layout">
+  <aside class="sidebar" id="sidebar"></aside>
+  <div class="main-content">
+    <header class="topbar">
+      <button class="sidebar-toggle icon-btn" id="sidebar-toggle">☰</button>
+      <div class="topbar-search"><span class="search-icon">🔍</span><input type="text" placeholder="Search cases..." id="global-search" oninput="filterCases()"></div>
+      <div class="topbar-actions">
+        <button class="icon-btn" id="theme-toggle">☀️</button>
+        <div class="avatar" id="topbar-avatar" style="width:32px;height:32px;font-size:13px;cursor:pointer;" onclick="window.location.href='profile.html'">A</div>
+      </div>
+    </header>
+    <main class="page-content">
+      <div class="page-header">
+        <div><h1 class="page-title">Cases</h1><p class="page-subtitle">Manage all your legal cases</p></div>
+        <button class="btn btn-primary" onclick="openAddCase()">➕ New Case</button>
+      </div>
+
+      <!-- Status Filter Tabs -->
+      <div style="display:flex;gap:8px;margin-bottom:20px;flex-wrap:wrap;" id="status-filters">
+        <button class="btn btn-primary btn-sm" onclick="setStatusFilter('')" id="filter-all">All</button>
+        <button class="btn btn-secondary btn-sm" onclick="setStatusFilter('Pending')" id="filter-Pending">⏳ Pending</button>
+        <button class="btn btn-secondary btn-sm" onclick="setStatusFilter('Ongoing')" id="filter-Ongoing">🔵 Ongoing</button>
+        <button class="btn btn-secondary btn-sm" onclick="setStatusFilter('Closed')" id="filter-Closed">⚫ Closed</button>
+        <button class="btn btn-secondary btn-sm" onclick="setStatusFilter('Won')" id="filter-Won">✅ Won</button>
+        <button class="btn btn-secondary btn-sm" onclick="setStatusFilter('Lost')" id="filter-Lost">❌ Lost</button>
+      </div>
+
+      <div class="table-container">
+        <div class="table-toolbar">
+          <div class="search-wrapper">
+            <span class="search-icon">🔍</span>
+            <input type="text" class="search-input" placeholder="Case title, number..." id="search-input" oninput="filterCases()">
+          </div>
+          <select class="filter-select" id="filter-priority" onchange="filterCases()">
+            <option value="">All Priority</option>
+            <option>Low</option><option>Medium</option><option>High</option><option>Urgent</option>
+          </select>
+          <select class="filter-select" id="filter-type" onchange="filterCases()">
+            <option value="">All Types</option>
+            <option>Civil</option><option>Criminal</option><option>Family</option>
+            <option>Corporate</option><option>Property</option><option>Labour</option><option>Tax</option>
+          </select>
+          <span style="margin-left:auto;font-size:13px;color:var(--text-muted);" id="count-text">Loading...</span>
+        </div>
+
+        <table><thead><tr>
+          <th>Case No.</th><th>Title</th><th>Client</th><th>Type</th>
+          <th>Status</th><th>Priority</th><th>Next Hearing</th><th>Court</th><th>Actions</th>
+        </tr></thead>
+        <tbody id="cases-tbody">
+          <tr><td colspan="9"><div class="loading-overlay"><div class="spinner"></div></div></td></tr>
+        </tbody></table>
+        <div class="pagination" id="pagination"></div>
+      </div>
+    </main>
+  </div>
+</div>
+
+<!-- Add/Edit Case Modal -->
+<div class="modal-overlay" id="case-modal">
+  <div class="modal modal-lg">
+    <div class="modal-header">
+      <span class="modal-title" id="case-modal-title">Add New Case</span>
+      <button class="modal-close" onclick="closeModal('case-modal')">✕</button>
+    </div>
+    <div class="modal-body">
+      <input type="hidden" id="case-edit-id">
+      <div class="form-grid cols-3">
+        <div class="form-group" style="grid-column:span 2;">
+          <label class="form-label">Case Title <span>*</span></label>
+          <input type="text" class="form-input" id="cs-title" placeholder="e.g. State vs Sharma - Property Dispute">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Case Type <span>*</span></label>
+          <select class="form-select" id="cs-type">
+            <option>Civil</option><option>Criminal</option><option>Family</option>
+            <option>Corporate</option><option>Property</option><option>Labour</option>
+            <option>Tax</option><option>Constitutional</option><option>Other</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-grid">
+        <div class="form-group">
+          <label class="form-label">Client <span>*</span></label>
+          <select class="form-select" id="cs-client">
+            <option value="">-- Select Client --</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Status</label>
+          <select class="form-select" id="cs-status">
+            <option>Pending</option><option>Ongoing</option><option>Closed</option><option>Won</option><option>Lost</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Priority</label>
+          <select class="form-select" id="cs-priority">
+            <option>Low</option><option>Medium</option><option>High</option><option>Urgent</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Filing Date</label>
+          <input type="date" class="form-input" id="cs-filing-date">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Next Hearing Date</label>
+          <input type="date" class="form-input" id="cs-hearing-date">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Court Name</label>
+          <input type="text" class="form-input" id="cs-court" placeholder="e.g. High Court Delhi">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Court Case Number</label>
+          <input type="text" class="form-input" id="cs-court-num" placeholder="Court's case number">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Judge Name</label>
+          <input type="text" class="form-input" id="cs-judge" placeholder="Hon. Justice...">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Opponent Name</label>
+          <input type="text" class="form-input" id="cs-opponent" placeholder="Opposing party">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Opponent Lawyer</label>
+          <input type="text" class="form-input" id="cs-opp-lawyer" placeholder="Opponent's advocate">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Estimated Fee (₹)</label>
+          <input type="number" class="form-input" id="cs-fee" placeholder="0">
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Case Description</label>
+        <textarea class="form-textarea" id="cs-desc" placeholder="Brief description of the case..." rows="3"></textarea>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Relief Sought</label>
+        <input type="text" class="form-input" id="cs-relief" placeholder="Relief or remedy sought">
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeModal('case-modal')">Cancel</button>
+      <button class="btn btn-primary" onclick="saveCase()" id="case-save-btn">Save Case</button>
+    </div>
+  </div>
+</div>
+
+<div id="toast-container"></div>
+<script src="../js/ui.js"></script><script src="../js/api.js"></script>
+<script src="../js/sidebar.js"></script><script src="../js/cases.js"></script>
+</body></html>

@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard — Advocate CMS</title>
+  <link rel="stylesheet" href="../css/style.css">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⚖️</text></svg>">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fullcalendar/core@6.1.10/main.min.css">
+</head>
+<body>
+  <div class="app-layout">
+    <aside class="sidebar" id="sidebar"></aside>
+    <div class="main-content">
+      <!-- Topbar -->
+      <header class="topbar">
+        <button class="sidebar-toggle icon-btn" id="sidebar-toggle">☰</button>
+        <div class="topbar-search">
+          <span class="search-icon">🔍</span>
+          <input type="text" placeholder="Search cases, clients..." id="global-search">
+        </div>
+        <div class="topbar-actions">
+          <button class="icon-btn" id="theme-toggle" title="Toggle theme">☀️</button>
+          <div class="dropdown" style="position:relative;">
+            <button class="icon-btn" id="notif-bell" title="Notifications">
+              🔔
+              <span class="badge-dot" id="notif-dot" style="display:none;"></span>
+            </button>
+            <div class="notif-panel" id="notif-panel">
+              <div class="notif-panel-header">
+                <span style="font-weight:600;font-size:14px;">Notifications</span>
+                <button onclick="markAllRead()" style="font-size:12px;color:var(--gold);background:none;border:none;cursor:pointer;">Mark all read</button>
+              </div>
+              <div class="notif-list" id="notif-list">
+                <div class="loading-overlay" style="padding:24px;"><div class="spinner"></div></div>
+              </div>
+            </div>
+          </div>
+          <div style="width:1px;height:24px;background:var(--border);"></div>
+          <div style="display:flex;align-items:center;gap:8px;cursor:pointer;" onclick="window.location.href='profile.html'">
+            <div class="avatar" id="topbar-avatar" style="width:32px;height:32px;font-size:13px;">A</div>
+            <span style="font-size:13px;font-weight:600;color:var(--text-primary);" id="topbar-name">Loading</span>
+          </div>
+        </div>
+      </header>
+
+      <!-- Page Content -->
+      <main class="page-content">
+        <div class="page-header">
+          <div>
+            <h1 class="page-title">Dashboard</h1>
+            <p class="page-subtitle" id="welcome-text">Good morning! Here's your practice overview.</p>
+          </div>
+          <button class="btn btn-primary" onclick="window.location.href='cases.html'">
+            ➕ New Case
+          </button>
+        </div>
+
+        <!-- Stats Grid -->
+        <div class="stats-grid" id="stats-grid">
+          <div class="stat-card" style="--card-accent:#c9a227;--icon-bg:rgba(201,162,39,0.1);">
+            <div class="stat-icon">👥</div>
+            <div class="stat-info">
+              <div class="stat-value" id="stat-clients"><div class="spinner" style="width:20px;height:20px;"></div></div>
+              <div class="stat-label">Total Clients</div>
+              <div class="stat-change up" id="stat-clients-change">↑ This month</div>
+            </div>
+          </div>
+          <div class="stat-card" style="--card-accent:#3b82f6;--icon-bg:rgba(59,130,246,0.1);">
+            <div class="stat-icon">📁</div>
+            <div class="stat-info">
+              <div class="stat-value" id="stat-cases">—</div>
+              <div class="stat-label">Active Cases</div>
+              <div class="stat-change" id="stat-cases-sub" style="color:var(--text-muted);">of — total</div>
+            </div>
+          </div>
+          <div class="stat-card" style="--card-accent:#f59e0b;--icon-bg:rgba(245,158,11,0.1);">
+            <div class="stat-icon">📅</div>
+            <div class="stat-info">
+              <div class="stat-value" id="stat-hearings">—</div>
+              <div class="stat-label">Upcoming Hearings</div>
+              <div class="stat-change" style="color:var(--text-muted);">Next 30 days</div>
+            </div>
+          </div>
+          <div class="stat-card" style="--card-accent:#ef4444;--icon-bg:rgba(239,68,68,0.1);">
+            <div class="stat-icon">💰</div>
+            <div class="stat-info">
+              <div class="stat-value" id="stat-pending">—</div>
+              <div class="stat-label">Pending Payments</div>
+              <div class="stat-change down">⚠ Dues pending</div>
+            </div>
+          </div>
+          <div class="stat-card" style="--card-accent:#10b981;--icon-bg:rgba(16,185,129,0.1);">
+            <div class="stat-icon">📈</div>
+            <div class="stat-info">
+              <div class="stat-value" id="stat-revenue">—</div>
+              <div class="stat-label">Total Revenue</div>
+              <div class="stat-change up">✓ Collected</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Charts Row -->
+        <div class="charts-grid mb-24">
+          <div class="chart-card">
+            <div class="card-header">
+              <div>
+                <div class="card-title">Cases by Status</div>
+                <div class="card-subtitle">Current distribution</div>
+              </div>
+            </div>
+            <div class="chart-container">
+              <canvas id="statusChart"></canvas>
+            </div>
+          </div>
+          <div class="chart-card">
+            <div class="card-header">
+              <div>
+                <div class="card-title">Case Types</div>
+                <div class="card-subtitle">Practice area breakdown</div>
+              </div>
+            </div>
+            <div class="chart-container">
+              <canvas id="typeChart"></canvas>
+            </div>
+          </div>
+        </div>
+
+        <!-- Bottom Row: Upcoming Hearings + Calendar -->
+        <div style="display:grid;grid-template-columns:1fr 1.4fr;gap:16px;margin-bottom:24px;" class="bottom-row">
+          <!-- Upcoming Hearings -->
+          <div class="card">
+            <div class="card-header">
+              <div>
+                <div class="card-title">📅 Upcoming Hearings</div>
+                <div class="card-subtitle">Next 30 days</div>
+              </div>
+              <a href="hearings.html" style="font-size:12px;color:var(--gold);">View all →</a>
+            </div>
+            <div id="upcoming-hearings-list">
+              <div class="loading-overlay" style="padding:32px;"><div class="spinner"></div></div>
+            </div>
+          </div>
+
+          <!-- Calendar -->
+          <div class="chart-card">
+            <div class="card-header">
+              <div class="card-title">📆 Calendar</div>
+            </div>
+            <div id="calendar" style="min-height:280px;"></div>
+          </div>
+        </div>
+
+        <!-- Recent Notifications -->
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">🔔 Recent Activity</div>
+            <a href="#" onclick="markAllRead()" style="font-size:12px;color:var(--gold);">Clear all</a>
+          </div>
+          <div id="activity-list">
+            <div class="loading-overlay" style="padding:32px;"><div class="spinner"></div></div>
+          </div>
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <div id="toast-container"></div>
+
+  <script src="../js/ui.js"></script>
+  <script src="../js/api.js"></script>
+  <script src="../js/sidebar.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@fullcalendar/core@6.1.10/index.global.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@fullcalendar/daygrid@6.1.10/index.global.min.js"></script>
+  <script src="../js/dashboard.js"></script>
+</body>
+</html>

@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Documents — Advocate CMS</title>
+  <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+<div class="app-layout">
+  <aside class="sidebar" id="sidebar"></aside>
+  <div class="main-content">
+    <header class="topbar">
+      <button class="sidebar-toggle icon-btn" id="sidebar-toggle">☰</button>
+      <div class="topbar-actions">
+        <button class="icon-btn" id="theme-toggle">☀️</button>
+        <div class="avatar" id="topbar-avatar" style="width:32px;height:32px;font-size:13px;cursor:pointer;" onclick="window.location.href='profile.html'">A</div>
+      </div>
+    </header>
+    <main class="page-content">
+      <div class="page-header">
+        <div><h1 class="page-title">Documents</h1><p class="page-subtitle">Manage and organize legal documents</p></div>
+        <button class="btn btn-primary" onclick="openModal('upload-modal')">📤 Upload Document</button>
+      </div>
+
+      <!-- Filters -->
+      <div class="table-container" style="margin-bottom:16px;padding:0;">
+        <div class="table-toolbar">
+          <select class="filter-select" id="filter-case" onchange="loadDocuments(1)">
+            <option value="">All Cases</option>
+          </select>
+          <select class="filter-select" id="filter-category" onchange="loadDocuments(1)">
+            <option value="">All Categories</option>
+            <option>Petition</option><option>Evidence</option><option>Affidavit</option>
+            <option>Court Order</option><option>Agreement</option><option>ID Proof</option>
+            <option>FIR</option><option>Notice</option><option>Other</option>
+          </select>
+          <span style="margin-left:auto;font-size:13px;color:var(--text-muted);" id="count-text">Loading...</span>
+        </div>
+      </div>
+
+      <div class="doc-grid" id="doc-grid">
+        <div class="loading-overlay" style="grid-column:span 5;"><div class="spinner"></div></div>
+      </div>
+      <div id="pagination" style="display:flex;justify-content:center;margin-top:16px;gap:6px;"></div>
+    </main>
+  </div>
+</div>
+
+<!-- Upload Modal -->
+<div class="modal-overlay" id="upload-modal">
+  <div class="modal">
+    <div class="modal-header">
+      <span class="modal-title">Upload Document</span>
+      <button class="modal-close" onclick="closeModal('upload-modal')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="upload-zone" id="upload-zone" onclick="document.getElementById('file-input').click()">
+        <div class="upload-icon">📁</div>
+        <h3>Click to browse or drag & drop</h3>
+        <p>PDF, DOC, DOCX, JPG, PNG — Max 10MB</p>
+        <div id="selected-file" style="margin-top:12px;font-size:13px;color:var(--gold);"></div>
+      </div>
+      <input type="file" id="file-input" style="display:none;" accept=".pdf,.doc,.docx,.jpg,.jpeg,.png,.gif,.txt" onchange="selectFile(this)">
+      <div class="form-grid" style="margin-top:16px;">
+        <div class="form-group">
+          <label class="form-label">Attach to Case</label>
+          <select class="form-select" id="upload-case"><option value="">-- No Case --</option></select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Category</label>
+          <select class="form-select" id="upload-category">
+            <option>Other</option><option>Petition</option><option>Evidence</option>
+            <option>Affidavit</option><option>Court Order</option><option>Agreement</option>
+            <option>ID Proof</option><option>FIR</option><option>Notice</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Description</label>
+        <input type="text" class="form-input" id="upload-desc" placeholder="Brief description of this document">
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeModal('upload-modal')">Cancel</button>
+      <button class="btn btn-primary" onclick="uploadDocument()" id="upload-btn">📤 Upload</button>
+    </div>
+  </div>
+</div>
+
+<div id="toast-container"></div>
+<script src="../js/ui.js"></script><script src="../js/api.js"></script>
+<script src="../js/sidebar.js"></script><script src="../js/documents.js"></script>
+</body></html>

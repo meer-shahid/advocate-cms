@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Payments — Advocate CMS</title>
+  <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+<div class="app-layout">
+  <aside class="sidebar" id="sidebar"></aside>
+  <div class="main-content">
+    <header class="topbar">
+      <button class="sidebar-toggle icon-btn" id="sidebar-toggle">☰</button>
+      <div class="topbar-actions">
+        <button class="icon-btn" id="theme-toggle">☀️</button>
+        <div class="avatar" id="topbar-avatar" style="width:32px;height:32px;font-size:13px;cursor:pointer;" onclick="window.location.href='profile.html'">A</div>
+      </div>
+    </header>
+    <main class="page-content">
+      <div class="page-header">
+        <div><h1 class="page-title">Payments</h1><p class="page-subtitle">Track invoices and payment history</p></div>
+        <button class="btn btn-primary" onclick="openAddPayment()">➕ New Invoice</button>
+      </div>
+
+      <!-- Stats -->
+      <div class="stats-grid" style="margin-bottom:20px;">
+        <div class="stat-card" style="--card-accent:#10b981;--icon-bg:rgba(16,185,129,0.1);">
+          <div class="stat-icon">💵</div>
+          <div class="stat-info"><div class="stat-value" id="s-paid">—</div><div class="stat-label">Total Collected</div></div>
+        </div>
+        <div class="stat-card" style="--card-accent:#f59e0b;--icon-bg:rgba(245,158,11,0.1);">
+          <div class="stat-icon">⏳</div>
+          <div class="stat-info"><div class="stat-value" id="s-pending">—</div><div class="stat-label">Pending</div></div>
+        </div>
+        <div class="stat-card" style="--card-accent:#ef4444;--icon-bg:rgba(239,68,68,0.1);">
+          <div class="stat-icon">🚨</div>
+          <div class="stat-info"><div class="stat-value" id="s-overdue">—</div><div class="stat-label">Overdue</div></div>
+        </div>
+        <div class="stat-card" style="--card-accent:#3b82f6;--icon-bg:rgba(59,130,246,0.1);">
+          <div class="stat-icon">📋</div>
+          <div class="stat-info"><div class="stat-value" id="s-count">—</div><div class="stat-label">Total Invoices</div></div>
+        </div>
+      </div>
+
+      <div class="table-container">
+        <div class="table-toolbar">
+          <select class="filter-select" id="filter-status" onchange="loadPayments(1)">
+            <option value="">All Status</option>
+            <option>Paid</option><option>Pending</option><option>Overdue</option><option>Partial</option>
+          </select>
+          <span style="margin-left:auto;font-size:13px;color:var(--text-muted);" id="count-text">Loading...</span>
+        </div>
+
+        <table><thead><tr>
+          <th>Invoice</th><th>Client</th><th>Case</th><th>Type</th>
+          <th>Amount</th><th>Status</th><th>Due Date</th><th>Paid Date</th><th>Actions</th>
+        </tr></thead>
+        <tbody id="payments-tbody">
+          <tr><td colspan="9"><div class="loading-overlay"><div class="spinner"></div></div></td></tr>
+        </tbody></table>
+        <div class="pagination" id="pagination"></div>
+      </div>
+    </main>
+  </div>
+</div>
+
+<!-- Payment Modal -->
+<div class="modal-overlay" id="payment-modal">
+  <div class="modal">
+    <div class="modal-header">
+      <span class="modal-title" id="pay-modal-title">New Invoice</span>
+      <button class="modal-close" onclick="closeModal('payment-modal')">✕</button>
+    </div>
+    <div class="modal-body">
+      <input type="hidden" id="pay-edit-id">
+      <div class="form-grid">
+        <div class="form-group">
+          <label class="form-label">Client <span>*</span></label>
+          <select class="form-select" id="pay-client"><option value="">-- Select --</option></select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Case</label>
+          <select class="form-select" id="pay-case"><option value="">-- No Case --</option></select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Amount (₹) <span>*</span></label>
+          <input type="number" class="form-input" id="pay-amount" placeholder="0.00" min="0">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Payment Type</label>
+          <select class="form-select" id="pay-type">
+            <option>Consultation Fee</option><option>Court Fee</option><option>Retainer</option>
+            <option>Final Settlement</option><option>Miscellaneous</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Status</label>
+          <select class="form-select" id="pay-status">
+            <option>Pending</option><option>Paid</option><option>Overdue</option><option>Partial</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Payment Method</label>
+          <select class="form-select" id="pay-method">
+            <option>Cash</option><option>Bank Transfer</option><option>Cheque</option><option>UPI</option><option>Online</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Due Date</label>
+          <input type="date" class="form-input" id="pay-due">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Paid Date</label>
+          <input type="date" class="form-input" id="pay-paid">
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Description</label>
+        <input type="text" class="form-input" id="pay-desc" placeholder="Payment description">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Transaction ID</label>
+        <input type="text" class="form-input" id="pay-txn" placeholder="Bank / UPI transaction reference">
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeModal('payment-modal')">Cancel</button>
+      <button class="btn btn-primary" onclick="savePayment()" id="pay-save-btn">Save Invoice</button>
+    </div>
+  </div>
+</div>
+
+<div id="toast-container"></div>
+<script src="../js/ui.js"></script><script src="../js/api.js"></script>
+<script src="../js/sidebar.js"></script><script src="../js/payments.js"></script>
+</body></html>
